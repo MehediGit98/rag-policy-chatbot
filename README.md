@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # README.md
 
 # RAG Policy Chatbot
@@ -736,3 +737,6 @@ For deployment issues:
 **Last Updated**: [Date]
 **Deployed Version**: v1.0.0
 **Status**: ✅ Production
+=======
+# rag-policy-chatbot
+>>>>>>> 13f952e3a2930e9ef4bd7ea13059a924d03de6fe
