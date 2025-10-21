@@ -1,0 +1,23 @@
+### 3. .gitignore
+```
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+.env
+chroma_db/
+*.db
+.DS_Store
+*.log
+.pytest_cache/
+htmlcov/
+.coverage
+dist/
+build/
+*.egg-info/
+```

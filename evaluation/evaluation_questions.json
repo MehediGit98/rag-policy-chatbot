@@ -1,0 +1,179 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "How many PTO days do full-time employees get per year?",
+      "gold_answer": "15 days",
+      "category": "PTO",
+      "expected_source": "pto_policy.md"
+    },
+    {
+      "id": 2,
+      "question": "What is the minimum internet speed required for remote work?",
+      "gold_answer": "25 Mbps",
+      "category": "Remote Work",
+      "expected_source": "remote_work_policy.md"
+    },
+    {
+      "id": 3,
+      "question": "What is the daily meal allowance during business travel?",
+      "gold_answer": "$75 per day",
+      "category": "Expenses",
+      "expected_source": "expense_policy.md"
+    },
+    {
+      "id": 4,
+      "question": "How often must passwords be changed?",
+      "gold_answer": "Every 90 days",
+      "category": "Security",
+      "expected_source": "security_policy.md"
+    },
+    {
+      "id": 5,
+      "question": "How many paid holidays does the company observe?",
+      "gold_answer": "10 holidays",
+      "category": "Holidays",
+      "expected_source": "holiday_policy.md"
+    },
+    {
+      "id": 6,
+      "question": "Can unused PTO be rolled over to the next year?",
+      "gold_answer": "Yes, up to 5 days",
+      "category": "PTO",
+      "expected_source": "pto_policy.md"
+    },
+    {
+      "id": 7,
+      "question": "What equipment does the company provide for remote workers?",
+      "gold_answer": "Laptop, monitor (on request), keyboard and mouse, plus $500 annual stipend",
+      "category": "Remote Work",
+      "expected_source": "remote_work_policy.md"
+    },
+    {
+      "id": 8,
+      "question": "What is the mileage reimbursement rate?",
+      "gold_answer": "$0.655 per mile",
+      "category": "Expenses",
+      "expected_source": "expense_policy.md"
+    },
+    {
+      "id": 9,
+      "question": "Is multi-factor authentication required?",
+      "gold_answer": "Yes, for all systems",
+      "category": "Security",
+      "expected_source": "security_policy.md"
+    },
+    {
+      "id": 10,
+      "question": "What happens when a holiday falls on a weekend?",
+      "gold_answer": "Observed on Friday if Saturday, Monday if Sunday",
+      "category": "Holidays",
+      "expected_source": "holiday_policy.md"
+    },
+    {
+      "id": 11,
+      "question": "How long must employees wait before requesting remote work?",
+      "gold_answer": "Must complete 90-day probationary period",
+      "category": "Remote Work",
+      "expected_source": "remote_work_policy.md"
+    },
+    {
+      "id": 12,
+      "question": "What is the maximum hotel rate in major cities?",
+      "gold_answer": "$200 per night",
+      "category": "Expenses",
+      "expected_source": "expense_policy.md"
+    },
+    {
+      "id": 13,
+      "question": "How soon must security incidents be reported?",
+      "gold_answer": "Within 1 hour of discovery",
+      "category": "Security",
+      "expected_source": "security_policy.md"
+    },
+    {
+      "id": 14,
+      "question": "How many floating holidays do employees get?",
+      "gold_answer": "2 floating holidays per year",
+      "category": "Holidays",
+      "expected_source": "holiday_policy.md"
+    },
+    {
+      "id": 15,
+      "question": "What is the PTO accrual rate per month?",
+      "gold_answer": "1.25 days per month",
+      "category": "PTO",
+      "expected_source": "pto_policy.md"
+    },
+    {
+      "id": 16,
+      "question": "What are the core business hours for remote workers?",
+      "gold_answer": "10 AM - 3 PM local time",
+      "category": "Remote Work",
+      "expected_source": "remote_work_policy.md"
+    },
+    {
+      "id": 17,
+      "question": "Within how many days must expenses be submitted?",
+      "gold_answer": "Within 30 days",
+      "category": "Expenses",
+      "expected_source": "expense_policy.md"
+    },
+    {
+      "id": 18,
+      "question": "What is the minimum password length?",
+      "gold_answer": "12 characters",
+      "category": "Security",
+      "expected_source": "security_policy.md"
+    },
+    {
+      "id": 19,
+      "question": "Is Christmas Eve a company holiday?",
+      "gold_answer": "Yes",
+      "category": "Holidays",
+      "expected_source": "holiday_policy.md"
+    },
+    {
+      "id": 20,
+      "question": "How much PTO is paid out upon termination?",
+      "gold_answer": "Up to 10 days",
+      "category": "PTO",
+      "expected_source": "pto_policy.md"
+    },
+    {
+      "id": 21,
+      "question": "What is the response time requirement for remote workers?",
+      "gold_answer": "Within 2 hours during business hours",
+      "category": "Remote Work",
+      "expected_source": "remote_work_policy.md"
+    },
+    {
+      "id": 22,
+      "question": "What is the breakfast meal allowance?",
+      "gold_answer": "$15",
+      "category": "Expenses",
+      "expected_source": "expense_policy.md"
+    },
+    {
+      "id": 23,
+      "question": "How often are access reviews conducted?",
+      "gold_answer": "Quarterly",
+      "category": "Security",
+      "expected_source": "security_policy.md"
+    },
+    {
+      "id": 24,
+      "question": "When is Labor Day observed?",
+      "gold_answer": "First Monday in September",
+      "category": "Holidays",
+      "expected_source": "holiday_policy.md"
+    },
+    {
+      "id": 25,
+      "question": "How far in advance must PTO be requested?",
+      "gold_answer": "At least 2 weeks in advance",
+      "category": "PTO",
+      "expected_source": "pto_policy.md"
+    }
+  ]
+}
