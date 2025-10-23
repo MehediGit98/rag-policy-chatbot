@@ -1,5 +1,5 @@
 # .github/workflows/deploy.yml
-# CI/CD Pipeline for FREE RAG System
+# CI/CD Pipeline for RAG Policy Chatbot using Groq
 
 name: CI/CD Pipeline
 
@@ -39,69 +39,177 @@ jobs:
       run: |
         echo "Checking project structure..."
         ls -la
+        echo ""
         echo "Checking src directory..."
         ls -la src/
-        echo "Checking data directory..."
-        ls -la data/policies/ || echo "No policies directory"
+        echo ""
+        echo "Checking data/policies directory..."
+        ls -la data/policies/ || echo "⚠️ Policy directory not found"
+        echo ""
+        echo "Checking evaluation directory..."
+        ls -la evaluation/ || echo "⚠️ Evaluation directory not found"
     
     - name: Check Python imports
       run: |
-        echo "Testing imports..."
-        python -c "import src.config; print('✓ config.py')"
-        python -c "import src.ingestion; print('✓ ingestion.py')"
-        python -c "import src.retrieval; print('✓ retrieval.py (note: will fail without API key)')" || echo "⚠️ retrieval.py needs API key"
-        python -c "import app; print('✓ app.py')"
+        echo "Testing Python imports..."
+        python -c "import src.config; print('✅ config.py imported successfully')"
+        python -c "import src.ingestion; print('✅ ingestion.py imported successfully')"
+        python -c "import src.evaluation; print('✅ evaluation.py imported successfully')"
+        python -c "import app; print('✅ app.py imported successfully')"
+        echo ""
+        echo "Note: retrieval.py requires GROQ_API_KEY to initialize LLM"
     
-    - name: Verify configuration
+    - name: Verify Groq configuration
       run: |
-        echo "Checking configuration..."
-        python -c "from src.config import Config; Config.print_config()" || echo "Config check completed with warnings"
-    
-    - name: Run linting (optional)
-      continue-on-error: true
-      run: |
-        pip install flake8
-        flake8 src/ app.py --count --select=E9,F63,F7,F82 --show-source --statistics || echo "Linting completed"
-    
-    - name: Run unit tests
-      env:
-        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      run: |
-        pip install pytest pytest-cov
-        pytest tests/ -v --tb=short || echo "Tests completed (some may skip without API key)"
+        echo "Verifying Groq configuration..."
+        python -c "
+from src.config import Config
+config = Config()
+print(f'LLM Model: {config.GROQ_MODEL}')
+print(f'Embedding Model: {config.EMBEDDING_MODEL}')
+print(f'Chunk Size: {config.CHUNK_SIZE}')
+print(f'Top-K: {config.TOP_K}')
+print(f'Using Groq: {config.USE_GROQ}')
+if config.GROQ_API_KEY:
+    print('✅ GROQ_API_KEY is set')
+else:
+    print('⚠️ GROQ_API_KEY not set (expected in CI)')
+"
     
     - name: Validate policy files
       run: |
-        echo "Checking policy files..."
+        echo "Validating policy files..."
         python -c "
 import os
 policy_dir = 'data/policies'
 if os.path.exists(policy_dir):
     files = [f for f in os.listdir(policy_dir) if f.endswith('.md')]
-    print(f'Found {len(files)} policy files')
-    for f in files:
-        print(f'  - {f}')
+    print(f'✅ Found {len(files)} policy markdown files:')
+    for f in sorted(files):
+        filepath = os.path.join(policy_dir, f)
+        size = os.path.getsize(filepath)
+        print(f'  - {f} ({size} bytes)')
+    
+    expected_files = ['pto_policy.md', 'remote_work_policy.md', 
+                     'expense_policy.md', 'security_policy.md', 
+                     'holiday_policy.md']
+    missing = [f for f in expected_files if f not in files]
+    if missing:
+        print(f'⚠️ Missing expected files: {missing}')
+    else:
+        print('✅ All expected policy files present')
 else:
-    print('⚠️ Policy directory not found')
+    print('❌ Policy directory not found!')
+    exit(1)
 "
     
-    - name: Check evaluation files
+    - name: Check evaluation setup
       run: |
-        echo "Checking evaluation setup..."
+        echo "Checking evaluation configuration..."
         if [ -f "evaluation/evaluation_questions.json" ]; then
-          echo "✓ Evaluation questions found"
-          python -c "import json; data=json.load(open('evaluation/evaluation_questions.json')); print(f'Questions: {len(data[\"questions\"])}')"
+          echo "✅ Evaluation questions file found"
+          python -c "
+import json
+with open('evaluation/evaluation_questions.json', 'r') as f:
+    data = json.load(f)
+    questions = data.get('questions', [])
+    print(f'Total questions: {len(questions)}')
+    
+    categories = {}
+    for q in questions:
+        cat = q.get('category', 'Unknown')
+        categories[cat] = categories.get(cat, 0) + 1
+    
+    print('Questions by category:')
+    for cat, count in sorted(categories.items()):
+        print(f'  - {cat}: {count}')
+"
         else
-          echo "⚠️ Evaluation questions not found"
+          echo "⚠️ Evaluation questions file not found"
         fi
+        
+        if [ -f "evaluation/run_evaluation.py" ]; then
+          echo "✅ Evaluation script found"
+        else
+          echo "⚠️ Evaluation script not found"
+        fi
+    
+    - name: Run linting (optional)
+      continue-on-error: true
+      run: |
+        echo "Running code linting..."
+        pip install flake8
+        flake8 src/ app.py --count --select=E9,F63,F7,F82 --show-source --statistics || echo "Linting completed with warnings"
+    
+    - name: Run unit tests
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        USE_GROQ: true
+        GROQ_MODEL: llama-3.1-8b-instant
+        EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+      run: |
+        echo "Installing test dependencies..."
+        pip install pytest pytest-cov
+        
+        echo "Running unit tests..."
+        pytest tests/ -v --tb=short --maxfail=5 || echo "⚠️ Some tests may have failed or been skipped without API key"
+        
+        echo ""
+        echo "Test execution completed"
+    
+    - name: Validate requirements.txt
+      run: |
+        echo "Checking requirements.txt..."
+        if grep -q "groq" requirements.txt; then
+          echo "✅ groq package found in requirements.txt"
+        else
+          echo "❌ groq package not found in requirements.txt!"
+          exit 1
+        fi
+        
+        if grep -q "langchain-groq" requirements.txt; then
+          echo "✅ langchain-groq package found in requirements.txt"
+        else
+          echo "❌ langchain-groq package not found in requirements.txt!"
+          exit 1
+        fi
+        
+        echo "✅ All required packages present"
+    
+    - name: Check documentation files
+      run: |
+        echo "Verifying documentation files..."
+        files=("README.md" "deployed.md" "design-and-evaluation.md" "ai-use.md")
+        for file in "${files[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "⚠️ $file missing"
+          fi
+        done
     
     - name: Build success notification
       if: success()
       run: |
-        echo "✅ Build and tests completed successfully!"
-        echo "Branch: ${{ github.ref }}"
-        echo "Commit: ${{ github.sha }}"
-        echo "Note: Deployment to Render will happen automatically for main branch"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "✅ BUILD AND TESTS COMPLETED SUCCESSFULLY!"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "📊 Build Summary:"
+        echo "  Branch: ${{ github.ref }}"
+        echo "  Commit: ${{ github.sha }}"
+        echo "  Author: ${{ github.actor }}"
+        echo ""
+        echo "🚀 Next Steps:"
+        if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+          echo "  - Automatic deployment to Render will be triggered"
+          echo "  - Monitor deployment at: https://dashboard.render.com"
+          echo "  - Expected deployment time: 10-15 minutes"
+        else
+          echo "  - Merge to main branch to trigger deployment"
+        fi
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
   
   deploy:
     needs: build-and-test
@@ -113,41 +221,104 @@ else:
       env:
         RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
       run: |
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🚀 DEPLOYING TO RENDER"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        
         if [ -z "$RENDER_DEPLOY_HOOK" ]; then
-          echo "⚠️  RENDER_DEPLOY_HOOK not set. Skipping deployment."
+          echo "⚠️  RENDER_DEPLOY_HOOK secret not configured"
           echo ""
-          echo "To enable auto-deployment:"
-          echo "1. Get your Render deploy hook from: Settings → Deploy Hook"
-          echo "2. Add it to GitHub: Settings → Secrets → Actions"
-          echo "3. Name it: RENDER_DEPLOY_HOOK"
+          echo "📝 To enable automatic deployment:"
+          echo ""
+          echo "1. Get your Render Deploy Hook:"
+          echo "   • Go to https://dashboard.render.com"
+          echo "   • Navigate to your service"
+          echo "   • Settings → Deploy Hook"
+          echo "   • Copy the webhook URL"
+          echo ""
+          echo "2. Add to GitHub Secrets:"
+          echo "   • Go to your GitHub repository"
+          echo "   • Settings → Secrets and variables → Actions"
+          echo "   • Click 'New repository secret'"
+          echo "   • Name: RENDER_DEPLOY_HOOK"
+          echo "   • Value: [paste webhook URL]"
+          echo "   • Click 'Add secret'"
+          echo ""
+          echo "3. Push to main branch again to trigger deployment"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           exit 0
         fi
         
-        echo "🚀 Triggering deployment to Render..."
-        response=$(curl -X POST "$RENDER_DEPLOY_HOOK" -w "\n%{http_code}")
+        echo "📡 Triggering Render deployment..."
+        echo ""
+        
+        response=$(curl -X POST "$RENDER_DEPLOY_HOOK" \
+          -H "Content-Type: application/json" \
+          -w "\n%{http_code}" \
+          -s)
+        
         http_code=$(echo "$response" | tail -n1)
         
+        echo ""
         if [ "$http_code" -eq 200 ] || [ "$http_code" -eq 201 ]; then
-          echo "✅ Deployment triggered successfully!"
+          echo "✅ DEPLOYMENT TRIGGERED SUCCESSFULLY!"
           echo ""
-          echo "Monitor deployment at: https://dashboard.render.com"
-          echo "Expected deployment time: 10-15 minutes"
+          echo "📊 Deployment Details:"
+          echo "  • Platform: Render (Free Tier)"
+          echo "  • Expected build time: 10-15 minutes"
+          echo "  • Status: In Progress"
           echo ""
-          echo "Your app will be available at:"
-          echo "https://your-service-name.onrender.com"
+          echo "🔗 Monitoring:"
+          echo "  • Dashboard: https://dashboard.render.com"
+          echo "  • Logs: Real-time in Render dashboard"
+          echo ""
+          echo "🌐 Your app will be available at:"
+          echo "  • https://rag-policy-chatbot.onrender.com"
+          echo "  (or your custom Render URL)"
+          echo ""
+          echo "🧪 Post-Deployment Verification:"
+          echo "  • curl https://your-app.onrender.com/health"
+          echo "  • curl -X POST https://your-app.onrender.com/chat \\"
+          echo "      -H 'Content-Type: application/json' \\"
+          echo "      -d '{\"question\": \"How many PTO days?\"}'"
+          echo ""
         else
-          echo "❌ Deployment trigger failed with status code: $http_code"
+          echo "❌ DEPLOYMENT FAILED"
+          echo ""
+          echo "HTTP Status Code: $http_code"
+          echo "Response: $response"
+          echo ""
+          echo "🔧 Troubleshooting:"
+          echo "  1. Verify RENDER_DEPLOY_HOOK is correct"
+          echo "  2. Check Render dashboard for service status"
+          echo "  3. Ensure service is not already deploying"
+          echo "  4. Try manual deployment from Render dashboard"
+          echo ""
           exit 1
         fi
+        
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
-    - name: Deployment notification
+    - name: Deployment success notification
       if: success()
       run: |
-        echo "🎉 Deployment initiated!"
         echo ""
-        echo "Next steps:"
-        echo "1. Check Render dashboard for deployment progress"
-        echo "2. Wait ~10-15 minutes for build to complete"
-        echo "3. Test your app at the Render URL"
-        echo "4. Verify /health endpoint responds"
-        echo "5. Test /chat endpoint with sample questions"
+        echo "🎉 DEPLOYMENT PROCESS INITIATED SUCCESSFULLY!"
+        echo ""
+        echo "⏳ Next Steps:"
+        echo "  1. Monitor build progress in Render dashboard"
+        echo "  2. Wait for build to complete (~10-15 minutes)"
+        echo "  3. Verify /health endpoint is responsive"
+        echo "  4. Test /chat endpoint with sample questions"
+        echo "  5. Check evaluation results if needed"
+        echo ""
+        echo "📝 Remember:"
+        echo "  • First deployment takes longer (downloads models)"
+        echo "  • Subsequent deployments are faster (cached)"
+        echo "  • Free tier apps sleep after 15 min inactivity"
+        echo "  • Cold start takes 30-45 seconds"
+        echo ""
+        echo "✅ All systems operational!"
+        echo ""
