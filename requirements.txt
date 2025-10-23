@@ -39,6 +39,6 @@ chromadb>=1.0.20
 huggingface-hub>=0.36.0
 
 # === CPU-only PyTorch for Sentence Transformers ===
-torch==2.7.1+cpu
-torchvision==0.22.1+cpu
-torchaudio==2.7.1+cpu
+torch==2.7.1
+torchvision==0.22.1
+torchaudio==2.7.1
