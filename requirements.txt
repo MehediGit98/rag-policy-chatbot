@@ -34,6 +34,6 @@ langchain-openai==0.3.35
 langchain-huggingface==0.3.1
 langchain-chroma==0.2.6
 sentence-transformers==2.2.2
-langchain-community==0.0.202
+langchain-community>=0.3.27,<0.4
 # chromadb removed → auto-installed as >=1.0.20
 # huggingface-hub not pinned → will auto-install >=0.33.4 for langchain-huggingface
