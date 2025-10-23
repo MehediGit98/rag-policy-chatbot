@@ -21,8 +21,6 @@ wheel==0.45.1
 
 # === Web / App ===
 flask==2.3.3
-
-# === RAG & AI Dependencies ===
 python-dotenv==1.0.1
 markdown==3.9
 beautifulsoup4==4.12.2
@@ -38,3 +36,4 @@ langchain-chroma==0.2.6
 sentence-transformers==2.2.2
 langchain-community==0.0.202
 # chromadb removed → auto-installed as >=1.0.20
+# huggingface-hub not pinned → will auto-install >=0.33.4 for langchain-huggingface
