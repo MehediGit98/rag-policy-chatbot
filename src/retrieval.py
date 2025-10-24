@@ -4,9 +4,9 @@ import logging
 import os
 os.environ["ANONYMIZED_TELEMETRY"] = "false"
 
-from src.config import Config
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma
+from config import Config
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
 
 # Conditional LLM imports
 if Config.USE_GROQ:
@@ -38,17 +38,17 @@ class RAGRetriever:
             logger.info("Using Groq LLM: %s", self.config.GROQ_MODEL)
             self.llm = ChatGroq(
                 model=self.config.GROQ_MODEL,
-                api_key=self.config.GROQ_API_KEY,
+                groq_api_key=self.config.GROQ_API_KEY,
                 temperature=self.config.TEMPERATURE,
                 max_tokens=self.config.MAX_TOKENS
             )
         else:
-            logger.info("Using OpenAI LLM: %s", self.config.LLM_MODEL)
+            logger.info("Using OpenAI LLM")
             self.llm = ChatOpenAI(
-                model=self.config.LLM_MODEL or self.config.OPENAI_MODEL,
+                model_name="gpt-3.5-turbo",
                 temperature=self.config.TEMPERATURE,
                 max_tokens=self.config.MAX_TOKENS,
-                api_key=self.config.OPENAI_API_KEY
+                openai_api_key=os.getenv('OPENAI_API_KEY', '')
             )
 
     def retrieve_documents(self, query: str, k: Optional[int] = None) -> List[Dict]:

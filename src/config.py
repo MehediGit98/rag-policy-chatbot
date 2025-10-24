@@ -1,6 +1,5 @@
 """
-Configuration for RAG application using CURRENT Groq FREE models (October 2025)
-Updated with latest supported models
+Configuration for RAG application with compatible versions
 """
 
 import os
@@ -13,26 +12,13 @@ class Config:
     USE_GROQ = os.getenv('USE_GROQ', 'true').lower() == 'true'
     GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
     
-    # Model Configuration - CURRENT Groq Models (2025)
-    # PRODUCTION MODELS (Recommended - Stable):
-    # - llama-3.3-70b-versatile (Best quality, 70B params, 131K context)
-    # - llama-3.1-8b-instant (Fast, 8B params, 131K context) ✅ RECOMMENDED
-    # - gemma2-9b-it (Good quality, 9B params, 8K context)
-    #
-    # PREVIEW MODELS (May be discontinued):
-    # - deepseek-r1-distill-llama-70b (Reasoning model, 70B params)
-    # - qwen/qwen3-32b (32B params, 131K context)
+    # Model Configuration - Groq Models
+    GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.1-8b-instant')
     
-    GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.1-8b-instant')  # Best for free tier
-    
-    # Embedding Model - Small and local, no API needed
-    # CURRENT OPTIONS (All free and work on 8GB RAM):
-    # - sentence-transformers/all-MiniLM-L6-v2 (80MB, 384 dim) ✅ RECOMMENDED
-    # - sentence-transformers/all-mpnet-base-v2 (420MB, 768 dim, better quality)
-    # - sentence-transformers/paraphrase-MiniLM-L3-v2 (60MB, 384 dim, faster)
+    # Embedding Model - Compatible with available versions
     EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
     
-    # RAG Parameters - Optimized for free tier and low memory
+    # RAG Parameters
     CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 400))
     CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 40))
     TOP_K = int(os.getenv('TOP_K', 3))
@@ -61,15 +47,11 @@ class Config:
     def print_config(cls):
         """Print current configuration (safe for logs)."""
         print("=" * 60)
-        print("RAG System Configuration (FREE Models - Oct 2025)")
+        print("RAG System Configuration (Compatible Versions)")
         print("=" * 60)
-        print(f"LLM Provider:      Groq (Free)")
-        print(f"LLM Model:         {cls.GROQ_MODEL}")
-        print(f"  Context:         131K tokens")
-        print(f"  Speed:           ~800 tokens/sec")
+        print(f"LLM Provider:      {'Groq' if cls.USE_GROQ else 'OpenAI'}")
+        print(f"LLM Model:         {cls.GROQ_MODEL if cls.USE_GROQ else 'OpenAI Model'}")
         print(f"Embedding Model:   {cls.EMBEDDING_MODEL}")
-        print(f"  Size:            ~80MB")
-        print(f"  Device:          CPU")
         print(f"Chunk Size:        {cls.CHUNK_SIZE}")
         print(f"Chunk Overlap:     {cls.CHUNK_OVERLAP}")
         print(f"Top-K Retrieval:   {cls.TOP_K}")

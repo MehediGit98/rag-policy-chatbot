@@ -1,4 +1,4 @@
-# === src/ingestion.py ===
+# src/ingestion.py
 import os
 from pathlib import Path
 from typing import List, Dict
@@ -8,10 +8,10 @@ from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_chroma import Chroma  # ✅ Use langchain_chroma instead of langchain.vectorstores
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
 
-from src.config import Config
+from config import Config
 
 class DocumentIngestion:
     def __init__(self):

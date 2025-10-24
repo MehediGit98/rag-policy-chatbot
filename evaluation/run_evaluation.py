@@ -1,7 +1,7 @@
 """
 Evaluation script for RAG system
 Runs comprehensive evaluation on test questions and generates report
-without requiring any login or API calls for configuration.
+with compatible versions
 """
 
 import json
@@ -15,7 +15,7 @@ from collections import defaultdict
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.retrieval import RAGRetriever
-from src.config import Config
+from config import Config
 from src.evaluation import (
     AnswerEvaluator, 
     LatencyEvaluator, 
@@ -186,7 +186,7 @@ class RAGSystemEvaluator:
                 'chunk_size': self.config.CHUNK_SIZE,
                 'chunk_overlap': self.config.CHUNK_OVERLAP,
                 'top_k': self.config.TOP_K,
-                'llm_model': getattr(self.config, 'LLM_MODEL', None),
+                'llm_model': self.config.GROQ_MODEL if self.config.USE_GROQ else 'OpenAI',
                 'embedding_model': self.config.EMBEDDING_MODEL,
                 'temperature': self.config.TEMPERATURE,
                 'max_tokens': self.config.MAX_TOKENS
