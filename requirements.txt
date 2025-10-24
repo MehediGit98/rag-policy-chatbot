@@ -12,7 +12,7 @@ langchain-community
 chromadb
 sentence-transformers
 langchain-text-splitters  # <-- NEW PACKAGE ADDED
-
+langchain-huggingface  # <-- NEW PACKAGE ADDED
 # === LLM Providers ===
 langchain-groq
 langchain-openai
