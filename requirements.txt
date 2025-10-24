@@ -1,5 +1,5 @@
 # === Base ===
-flask==2.3.3
+flask
 python-dotenv==1.0.1
 requests==2.32.3
 beautifulsoup4==4.12.2
@@ -7,7 +7,7 @@ pypdf==3.17.0
 markdown==3.6
 
 # === LangChain & Ecosystem ===
-langchain==0.0.354
+langchain
 langchain-community==0.0.29
 chromadb==0.4.22
 sentence-transformers==2.2.2
@@ -18,7 +18,7 @@ langchain-openai==0.0.8
 
 # === Embeddings ===
 huggingface-hub==0.20.3
-torch==2.5.0  # <--- FIX: Using the lowest available version
+torch
 transformers==4.36.2
 
 # === Evaluation ===

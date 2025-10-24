@@ -25,5 +25,5 @@ setup(
         "scikit-learn==1.3.2",
         "tqdm==4.65.0",  # <--- Added for completeness
     ],
-    python_requires=">=3.8",
+    python_requires=">=3.13",
 )
