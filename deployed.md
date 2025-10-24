@@ -25,7 +25,7 @@
 
 ### Build Command
 ```bash
-pip install -r requirements.txt && python -c 'from src.ingestion import DocumentIngestion; DocumentIngestion().ingest_all()'
+pip install --upgrade pip setuptools && pip install -r requirements.txt && python -c 'from src.ingestion import DocumentIngestion; DocumentIngestion().ingest_all()'
 ```
 
 ### Start Command
