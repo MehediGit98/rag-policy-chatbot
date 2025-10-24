@@ -4,7 +4,7 @@ import logging
 import os
 os.environ["ANONYMIZED_TELEMETRY"] = "false"
 
-from config import Config
+from .config import Config
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
