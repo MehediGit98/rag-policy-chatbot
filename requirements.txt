@@ -5,7 +5,7 @@ requests
 beautifulsoup4
 pypdf
 markdown
-
+gunicorn # <--- NEW: Gunicorn added for deployment
 # === LangChain & Ecosystem ===
 langchain
 langchain-community

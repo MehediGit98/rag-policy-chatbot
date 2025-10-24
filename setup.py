@@ -12,6 +12,7 @@ setup(
         "beautifulsoup4",
         "pypdf",
         "markdown",
+        "gunicorn", # <--- NEW: Gunicorn added for deployment
         "langchain",
         "langchain-community",
         "chromadb",
