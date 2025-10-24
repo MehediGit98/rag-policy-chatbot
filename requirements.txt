@@ -1,7 +1,7 @@
 # === Core LLM and LangChain stack ===
 langchain==0.1.16
 langchain-huggingface>=0.0.3
-chromadb==0.5.3
+chromadb==0.4.22  # ✅ prebuilt wheels — no Rust build
 
 # === Embeddings & Transformers ===
 sentence-transformers==2.2.2
