@@ -19,7 +19,7 @@ setup(
         "langchain-groq==0.1.2",
         "langchain-openai==0.0.8",
         "huggingface-hub==0.20.3",
-        "torch==2.1.2",
+        "torch==2.5.0",  # <--- FIX: Using the lowest available version
         "transformers==4.36.2",
         "numpy==1.24.3",
         "scikit-learn==1.3.2",
