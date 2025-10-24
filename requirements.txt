@@ -11,7 +11,7 @@ langchain==0.3.10
 langchain-chroma==1.0.0
 langchain-groq==0.3.8
 langchain-openai==0.3.4
-langchain-huggingface==0.3.2
+langchain-huggingface==0.3.1  # Fixed version
 
 # === Embeddings / ML ===
 huggingface-hub==0.25.2
