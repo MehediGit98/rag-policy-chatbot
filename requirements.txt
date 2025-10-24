@@ -11,6 +11,7 @@ langchain
 langchain-community
 chromadb
 sentence-transformers
+langchain-text-splitters  # <-- NEW PACKAGE ADDED
 
 # === LLM Providers ===
 langchain-groq

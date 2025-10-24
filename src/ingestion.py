@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
 # Correct imports for modern LangChain (v0.2.x+)
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter 
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 

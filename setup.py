@@ -16,6 +16,7 @@ setup(
         "langchain-community",
         "chromadb",
         "sentence-transformers",
+        "langchain-text-splitters", # <-- NEW PACKAGE ADDED
         "langchain-groq",
         "langchain-openai",
         "huggingface-hub",
