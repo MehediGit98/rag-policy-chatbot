@@ -102,7 +102,7 @@ This RAG (Retrieval-Augmented Generation) system implements a three-stage pipeli
 
 **Results Validation**: Achieved 100% groundedness and 100% citation accuracy
 
-### 2. Embedding Model: sentence-transformers/all-MiniLM-L6-v2
+### 2. Embedding Model: 'sentence-transformers/all-MiniLM-L3-v2'
 
 **Decision**: Use local sentence-transformers model
 

@@ -16,7 +16,7 @@ class Config:
     GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.1-8b-instant')
     
     # Embedding Model - Compatible with available versions
-    EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/paraphrase-MiniLM-L6-v2')
+    EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L3-v2')
     
     # RAG Parameters
     CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 400))
