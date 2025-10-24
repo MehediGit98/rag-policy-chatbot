@@ -7,6 +7,7 @@ import markdown
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
+# Correct imports for langchain 0.0.348
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
