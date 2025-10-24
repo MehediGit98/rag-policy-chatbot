@@ -1,7 +1,7 @@
 # src/app.py
 from flask import Flask, render_template, request, jsonify
 from src.retrieval import RAGRetriever
-from .config import Config  # FIX: Updated to relative import
+from src.config import Config  # FIX: Updated to relative import
 import time
 import os
 
