@@ -1,14 +1,14 @@
-# src/retrieval.py
+# src/retrieval.py (Import changes)
 from typing import List, Dict, Optional
 import logging
 import os
 os.environ["ANONYMIZED_TELEMETRY"] = "false"
 
 from config import Config
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 
-# Conditional LLM imports
+# Conditional LLM imports (already correct)
 if Config.USE_GROQ:
     from langchain_groq import ChatGroq
 else:

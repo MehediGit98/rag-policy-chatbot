@@ -1,4 +1,4 @@
-# src/ingestion.py
+# src/ingestion.py (Import changes)
 import os
 from pathlib import Path
 from typing import List, Dict
@@ -7,10 +7,10 @@ import markdown
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
-# Correct imports for langchain 0.0.348
+# Correct imports for modern LangChain (v0.2.x+)
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 
 from config import Config
 
