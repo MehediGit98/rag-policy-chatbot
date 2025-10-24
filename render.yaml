@@ -43,16 +43,16 @@ services:
         value: sentence-transformers/all-MiniLM-L6-v2
       
       - key: CHUNK_SIZE
-        value: 400
+        value: 300
       
       - key: CHUNK_OVERLAP
-        value: 40
+        value: 30
       
       - key: TOP_K
-        value: 3
+        value: 2
       
       - key: MAX_TOKENS
-        value: 400
+        value: 300
       
       - key: TEMPERATURE
         value: 0.3

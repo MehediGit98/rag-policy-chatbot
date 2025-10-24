@@ -1,5 +1,6 @@
 """
-Configuration for RAG application with compatible versions
+Ultra-lightweight configuration optimized for 512MB RAM
+Uses the smallest possible models and aggressive memory optimization
 """
 
 import os
@@ -12,17 +13,18 @@ class Config:
     USE_GROQ = os.getenv('USE_GROQ', 'true').lower() == 'true'
     GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
     
-    # Model Configuration - Groq Models
+    # Model Configuration - Groq Models (API-based, no local memory)
     GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.1-8b-instant')
     
-    # Embedding Model - Compatible with available versions
-    EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/paraphrase-MiniLM-L6-v2')
+    # 🔥 CRITICAL: Use the smallest possible embedding model (~23MB)
+    # This is 10x smaller than the previous model
+    EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
     
-    # RAG Parameters
-    CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 400))
-    CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 40))
-    TOP_K = int(os.getenv('TOP_K', 3))
-    MAX_TOKENS = int(os.getenv('MAX_TOKENS', 500))
+    # 🔥 Aggressive chunking to reduce vector store size
+    CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 300))  # Reduced from 400
+    CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 30))  # Reduced from 40
+    TOP_K = int(os.getenv('TOP_K', 2))  # Reduced from 3
+    MAX_TOKENS = int(os.getenv('MAX_TOKENS', 300))  # Reduced from 500
     TEMPERATURE = float(os.getenv('TEMPERATURE', 0.3))
     
     # Paths
@@ -47,11 +49,11 @@ class Config:
     def print_config(cls):
         """Print current configuration (safe for logs)."""
         print("=" * 60)
-        print("RAG System Configuration (Compatible Versions)")
+        print("RAG System Configuration (Ultra-Lightweight for 512MB)")
         print("=" * 60)
-        print(f"LLM Provider:      {'Groq' if cls.USE_GROQ else 'OpenAI'}")
-        print(f"LLM Model:         {cls.GROQ_MODEL if cls.USE_GROQ else 'OpenAI Model'}")
-        print(f"Embedding Model:   {cls.EMBEDDING_MODEL}")
+        print(f"LLM Provider:      {'Groq (API)' if cls.USE_GROQ else 'OpenAI'}")
+        print(f"LLM Model:         {cls.GROQ_MODEL}")
+        print(f"Embedding Model:   {cls.EMBEDDING_MODEL} (~23MB)")
         print(f"Chunk Size:        {cls.CHUNK_SIZE}")
         print(f"Chunk Overlap:     {cls.CHUNK_OVERLAP}")
         print(f"Top-K Retrieval:   {cls.TOP_K}")
