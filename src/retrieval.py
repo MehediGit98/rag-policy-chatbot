@@ -5,7 +5,9 @@ import os
 os.environ["ANONYMIZED_TELEMETRY"] = "false"
 
 from .config import Config
-from langchain_community.embeddings import HuggingFaceEmbeddings
+
+# CHANGE: Import from the new dedicated package
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
 # Conditional LLM imports (already correct)

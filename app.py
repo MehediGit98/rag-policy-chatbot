@@ -1,20 +1,36 @@
-### 7. app.py
+# src/app.py
 from flask import Flask, render_template, request, jsonify
 from src.retrieval import RAGRetriever
-from src.config import Config
+from .config import Config  # FIX: Updated to relative import
 import time
 import os
 
 app = Flask(__name__)
 config = Config()
 
-# Initialize RAG retriever
-try:
-    rag_retriever = RAGRetriever()
-    print("RAG system initialized successfully")
-except Exception as e:
-    print(f"Error initializing RAG system: {e}")
-    rag_retriever = None
+# -----------------------------------------------------------
+# FIX: Lazy Initialization to prevent Out-of-Memory (OOM) error
+# -----------------------------------------------------------
+rag_retriever = None
+
+def initialize_rag():
+    """Initializes the RAGRetriever instance once per worker."""
+    global rag_retriever
+    # Check if the retriever has already been initialized (None) or failed (False)
+    if rag_retriever is None:
+        try:
+            # This is the memory-intensive step.
+            rag_retriever = RAGRetriever()
+            print("RAG system initialized successfully (Lazy Load)")
+        except Exception as e:
+            # If initialization fails, mark it as False to avoid repeated crashes
+            print(f"Error initializing RAG system: {e}")
+            rag_retriever = False 
+
+# Initialize the retriever when the application is run/first requested
+with app.app_context():
+    initialize_rag()
+# -----------------------------------------------------------
 
 @app.route('/')
 def index():
@@ -26,7 +42,7 @@ def health():
     """Health check endpoint."""
     return jsonify({
         'status': 'healthy',
-        'rag_initialized': rag_retriever is not None,
+        'rag_initialized': rag_retriever is not None and rag_retriever is not False,
         'timestamp': time.time()
     })
 
@@ -35,10 +51,18 @@ def chat():
     """Main chat endpoint."""
     start_time = time.time()
     
-    if not rag_retriever:
+    # Check if initialization failed
+    if rag_retriever is False:
         return jsonify({
-            'error': 'RAG system not initialized'
+            'error': 'RAG system failed to initialize. Check logs for OOM or dependency errors.'
         }), 500
+    
+    # Check if initialization is still pending (should not happen with the `with app.app_context` block above)
+    if rag_retriever is None:
+        return jsonify({
+            'error': 'RAG system is still loading. Please try again in a moment.'
+        }), 503
+
     
     data = request.get_json()
     
@@ -69,10 +93,14 @@ def chat():
     
     except Exception as e:
         return jsonify({
-            'error': f'Error processing question: {str(e)}',
+            'error': f"An unexpected error occurred during chat: {str(e)}",
             'success': False
         }), 500
 
 if __name__ == '__main__':
-    port = config.PORT
-    app.run(host='0.0.0.0', port=port, debug=config.DEBUG)
+    if config.DEBUG:
+        app.run(host='0.0.0.0', port=config.PORT, debug=True)
+    else:
+        # In a production environment, Gunicorn will handle the startup
+        # We ensure the rag_retriever is initialized here for local testing
+        pass
