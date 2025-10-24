@@ -8,8 +8,8 @@ from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings  # updated import
-from langchain.vectorstores import Chroma  # use LangChain’s vectorstores wrapper
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_chroma import Chroma  # ✅ Use langchain_chroma instead of langchain.vectorstores
 
 from src.config import Config
 
