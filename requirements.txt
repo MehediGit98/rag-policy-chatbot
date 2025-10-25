@@ -1,28 +1,30 @@
+# === Gradio Interface ===
+gradio
+
 # === Base ===
-flask
 python-dotenv
 requests
 beautifulsoup4
 pypdf
 markdown
-gunicorn # <--- NEW: Gunicorn added for deployment
+
 # === LangChain & Ecosystem ===
 langchain
 langchain-community
 chromadb
 sentence-transformers
-langchain-text-splitters  # <-- NEW PACKAGE ADDED
-langchain-huggingface  # <-- NEW PACKAGE ADDED
+langchain-text-splitters
+langchain-huggingface
+
 # === LLM Providers ===
 langchain-groq
-langchain-openai
 
 # === Embeddings ===
 huggingface-hub
 torch
 transformers
 
-# === Evaluation ===
+# === Evaluation (Optional) ===
 numpy
 scikit-learn
 tqdm
