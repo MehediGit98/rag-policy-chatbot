@@ -1,61 +1,37 @@
-# render.yaml
-# Render Blueprint configuration for free deployment
-
 services:
-  # Web Service Configuration
   - type: web
     name: rag-policy-chatbot
     env: python
     region: oregon
     plan: free
     
-    # Build configuration - using free models, no API keys needed
-    buildCommand: |
-      pip install -r requirements.txt
-      python -c 'from src.ingestion import DocumentIngestion; DocumentIngestion().ingest_all()'
+    # 🔥 ONLY install dependencies, NO model loading!
+    buildCommand: pip install --no-cache-dir -r requirements.txt
     
-    # Start configuration
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120 --worker-class gthread
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 60 --worker-class sync --preload
     
-    # Health check configuration
     healthCheckPath: /health
-    
-    # Auto-deploy configuration
     branch: main
     
-    # Environment variables (all free, no API keys needed)
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10.0
+      - key: GROQ_API_KEY
+        sync: false
       
-      # Using Groq free API (no credit card required)
       - key: USE_GROQ
         value: true
-      
-      - key: GROQ_API_KEY
-        sync: false  # Set this in Render dashboard (free key from groq.com)
       
       - key: GROQ_MODEL
         value: llama-3.1-8b-instant
       
-      # Embedding model - small and fast
+      # 🔥 Use same model at runtime (already embedded)
       - key: EMBEDDING_MODEL
         value: sentence-transformers/all-MiniLM-L6-v2
       
       - key: CHUNK_SIZE
         value: 300
       
-      - key: CHUNK_OVERLAP
-        value: 30
-      
       - key: TOP_K
         value: 2
-      
-      - key: MAX_TOKENS
-        value: 300
-      
-      - key: TEMPERATURE
-        value: 0.3
       
       - key: DEBUG
         value: False

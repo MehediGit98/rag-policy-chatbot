@@ -1,23 +1,69 @@
-### 3. .gitignore
-```
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
+
+# Virtual Environments
 venv/
 env/
 ENV/
 .venv
+
+# Environment Variables
 .env
-chroma_db/
+.env.local
+
+# 🔥 IMPORTANT: chroma_db/ is NOT ignored!
+# We need to commit the pre-built vector store for deployment
+# chroma_db/  ← COMMENTED OUT!
+
+# Other databases (if you create any)
 *.db
+*.sqlite
+!chroma_db/*.sqlite3  # Allow chroma's sqlite file
+
+# OS Files
 .DS_Store
+Thumbs.db
+
+# Logs
 *.log
+logs/
+
+# Testing
 .pytest_cache/
 htmlcov/
 .coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Distribution / Packaging
 dist/
 build/
 *.egg-info/
-```
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Documentation builds
+docs/_build/
+site/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+temp/
+tmp/
