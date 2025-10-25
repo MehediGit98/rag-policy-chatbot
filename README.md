@@ -77,11 +77,11 @@ Based on evaluation across 25 test questions:
 - ✅ **Success Rate**: 100% (25/25 questions answered correctly)
 
 ### Latency Metrics
-- ⚡ **Median (p50)**: 0.601 seconds
-- ⚡ **Mean**: 2.039 seconds
-- ⚡ **95th percentile (p95)**: 4.669 seconds
-- ⚡ **Min**: 0.232 seconds
-- ⚡ **Max**: 5.673 seconds
+- ⚡ **Median (p50)**: 0.175 seconds
+- ⚡ **Mean**: 1.061 seconds
+- ⚡ **95th percentile (p95)**: 3.669 seconds
+- ⚡ **Min**: 0.146 seconds
+- ⚡ **Max**: 4.447 seconds
 
 ### Cost
 - 💰 **Total Monthly Cost**: $0.00
@@ -246,11 +246,10 @@ rag-policy-chatbot/
 │   ├── evaluation_questions.json   # Test questions
 │   └── run_evaluation.py           # Evaluation script
 ├── chroma_db/                      # Vector store (generated)
-└── docs/
-    ├── deployed.md
-    ├── design-and-evaluation.md
-    ├── HF_DEPLOYMENT_GUIDE.md
-    └── ai-use.md
+├── deployed.md
+├── design-and-evaluation.md
+├── HF_DEPLOYMENT_GUIDE.md
+└── ai-use.md
 ```
 
 ---
