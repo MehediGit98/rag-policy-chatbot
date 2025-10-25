@@ -1,4 +1,4 @@
-# src/retrieval.py (Import changes)
+# src/retrieval.py (Improved retrieval and prompt engineering)
 from typing import List, Dict, Optional
 import logging
 import os
@@ -10,7 +10,7 @@ from .config import Config
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
-# Conditional LLM imports (already correct)
+# Conditional LLM imports
 if Config.USE_GROQ:
     from langchain_groq import ChatGroq
 else:
@@ -54,80 +54,94 @@ class RAGRetriever:
             )
 
     def retrieve_documents(self, query: str, k: Optional[int] = None) -> List[Dict]:
-        """Retrieve top-k relevant documents from vector store."""
-        k = k or self.config.TOP_K
+        """Retrieve top-k relevant documents from vector store with better scoring."""
+        # Use higher K for retrieval, then select best ones
+        k_retrieval = (k or self.config.TOP_K) * 2  # Retrieve more, then filter
+        
         try:
-            results = self.vector_store.similarity_search_with_score(query, k=k)
+            results = self.vector_store.similarity_search_with_score(query, k=k_retrieval)
         except Exception as e:
             logger.error("Error during document retrieval: %s", e)
             return []
 
-        retrieved_docs = [
-            {
+        # Process and score results
+        retrieved_docs = []
+        for doc, score in results:
+            retrieved_docs.append({
                 "content": doc.page_content,
                 "source": doc.metadata.get("source", "Unknown"),
                 "chunk_id": doc.metadata.get("chunk_id", 0),
                 "score": float(score),
-            }
-            for doc, score in results
-        ]
+            })
+        
+        # Sort by relevance (lower score is better for distance)
+        retrieved_docs.sort(key=lambda x: x["score"])
+        
+        # Take top K after sorting
+        final_k = k or self.config.TOP_K
+        retrieved_docs = retrieved_docs[:final_k]
+        
         logger.info("Retrieved %d documents for query: %s", len(retrieved_docs), query)
         return retrieved_docs
 
     def generate_answer(self, query: str, retrieved_docs: List[Dict]) -> Dict:
-        """Generate answer using retrieved documents."""
+        """Generate answer using retrieved documents with improved prompt."""
         if not retrieved_docs:
             return {
                 "answer": "I can only answer questions about our company policies. "
-                          "No relevant information found.",
+                          "No relevant information found for your question.",
                 "citations": [],
                 "retrieved_docs": []
             }
 
-        # Build context for LLM
-        context_parts = [
-            f"[{i+1}] Source: {doc['source']}\n{doc['content']}"
-            for i, doc in enumerate(retrieved_docs)
-        ]
+        # Build context with all information
+        context_parts = []
+        for i, doc in enumerate(retrieved_docs):
+            context_parts.append(f"[Source {i+1}: {doc['source']}]\n{doc['content']}")
 
-        # ✅ Deduplicate sources — keep only one representative chunk per file (best-scoring one)
-        unique_sources = {}
-        for doc in retrieved_docs:
-            src = doc["source"]
-            if src not in unique_sources or doc["score"] < unique_sources[src]["score"]:
-                unique_sources[src] = {"content": doc["content"], "score": doc["score"]}
+        context = "\n\n---\n\n".join(context_parts)
 
-        citations = [
-            {
-                "index": i + 1,
-                "source": src,
-                "snippet": (info["content"][:200] + "..." if len(info["content"]) > 200 else info["content"])
-            }
-            for i, (src, info) in enumerate(unique_sources.items())
-        ]
+        # Improved prompt with better instructions
+        prompt = f"""You are a helpful company policy assistant. Your job is to answer employee questions based ONLY on the provided policy documents.
 
-        context = "\n\n".join(context_parts)
+CRITICAL INSTRUCTIONS:
+1. READ ALL THE CONTEXT CAREFULLY before answering
+2. Answer ONLY using information from the context below
+3. If the answer is in the context, provide a clear and complete response
+4. ALWAYS cite your sources using [1], [2], [3] notation
+5. If multiple sources contain relevant information, use all of them
+6. If the context doesn't clearly answer the question, say "I don't have enough information in our policy documents to answer that question."
+7. Be specific with numbers, dates, and details when available
+8. Keep your answer concise but complete
 
-        # Build prompt
-        prompt = f"""You are a helpful assistant that answers questions about company policies based solely on the provided context.
+CONTEXT FROM COMPANY POLICIES:
 
-IMPORTANT RULES:
-1. Only answer based on the information in the context below.
-2. If the context doesn't contain the answer, say "I can only answer questions about our company policies. The information you're looking for is not in our policy documents."
-3. Always cite your sources using [number] notation.
-4. Keep answers concise and under 500 tokens.
-5. Do not make up information not present in the context.
-
-Context:
 {context}
 
-Question: {query}
+QUESTION: {query}
 
-Answer (with citations):"""
+ANSWER (include citations [1], [2], etc.):"""
 
         try:
             response = self.llm.invoke(prompt)
             answer_text = response.content
+            
+            # Build citations from all retrieved documents
+            citations = []
+            seen_sources = set()
+            
+            for i, doc in enumerate(retrieved_docs):
+                source = doc["source"]
+                # Only add each source once, but include snippet from best match
+                if source not in seen_sources:
+                    seen_sources.add(source)
+                    snippet = doc["content"][:300] + "..." if len(doc["content"]) > 300 else doc["content"]
+                    citations.append({
+                        "index": len(citations) + 1,
+                        "source": source,
+                        "snippet": snippet
+                    })
+            
             logger.info("Generated answer successfully for query: %s", query)
             return {
                 "answer": answer_text,

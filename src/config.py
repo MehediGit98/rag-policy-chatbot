@@ -1,6 +1,5 @@
 """
-Ultra-lightweight configuration optimized for 512MB RAM
-Uses the smallest possible models and aggressive memory optimization
+Optimized configuration for better retrieval and answers
 """
 
 import os
@@ -16,16 +15,15 @@ class Config:
     # Model Configuration - Groq Models (API-based, no local memory)
     GROQ_MODEL = os.getenv('GROQ_MODEL', 'llama-3.1-8b-instant')
     
-    # 🔥 CRITICAL: Use the smallest possible embedding model (~23MB)
-    # This is 10x smaller than the previous model
+    # Embedding Model - Small and efficient
     EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')
     
-    # 🔥 Aggressive chunking to reduce vector store size
-    CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 300))  # Reduced from 400
-    CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 30))  # Reduced from 40
-    TOP_K = int(os.getenv('TOP_K', 2))  # Reduced from 3
-    MAX_TOKENS = int(os.getenv('MAX_TOKENS', 300))  # Reduced from 500
-    TEMPERATURE = float(os.getenv('TEMPERATURE', 0.3))
+    # 🔥 IMPROVED: Better chunking and retrieval for more complete answers
+    CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 400))  # Increased from 300 for more context
+    CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 50))  # Increased overlap for better continuity
+    TOP_K = int(os.getenv('TOP_K', 4))  # Increased from 2 to get more relevant chunks
+    MAX_TOKENS = int(os.getenv('MAX_TOKENS', 500))  # Increased from 300 for complete answers
+    TEMPERATURE = float(os.getenv('TEMPERATURE', 0.2))  # Lowered for more focused answers
     
     # Paths
     DATA_DIR = 'data/policies'
@@ -49,15 +47,15 @@ class Config:
     def print_config(cls):
         """Print current configuration (safe for logs)."""
         print("=" * 60)
-        print("RAG System Configuration (Ultra-Lightweight for 512MB)")
+        print("RAG System Configuration (Optimized for Better Answers)")
         print("=" * 60)
         print(f"LLM Provider:      {'Groq (API)' if cls.USE_GROQ else 'OpenAI'}")
         print(f"LLM Model:         {cls.GROQ_MODEL}")
-        print(f"Embedding Model:   {cls.EMBEDDING_MODEL} (~23MB)")
-        print(f"Chunk Size:        {cls.CHUNK_SIZE}")
-        print(f"Chunk Overlap:     {cls.CHUNK_OVERLAP}")
-        print(f"Top-K Retrieval:   {cls.TOP_K}")
-        print(f"Max Tokens:        {cls.MAX_TOKENS}")
+        print(f"Embedding Model:   {cls.EMBEDDING_MODEL}")
+        print(f"Chunk Size:        {cls.CHUNK_SIZE} tokens")
+        print(f"Chunk Overlap:     {cls.CHUNK_OVERLAP} tokens")
+        print(f"Top-K Retrieval:   {cls.TOP_K} chunks")
+        print(f"Max Tokens:        {cls.MAX_TOKENS} tokens")
         print(f"Temperature:       {cls.TEMPERATURE}")
         print(f"API Key Set:       {'✅' if cls.GROQ_API_KEY else '❌'}")
         print("=" * 60)

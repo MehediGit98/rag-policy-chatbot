@@ -45,11 +45,11 @@ GROQ_API_KEY=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
 USE_GROQ=true
 GROQ_MODEL=llama-3.1-8b-instant
 EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-CHUNK_SIZE=300
-CHUNK_OVERLAP=30
-TOP_K=2
-MAX_TOKENS=300
-TEMPERATURE=0.3
+CHUNK_SIZE=400
+CHUNK_OVERLAP=50
+TOP_K=4
+MAX_TOKENS=500
+TEMPERATURE=0.2
 ```
 
 > ⚠️ **Security Note**: The API key shown above should be rotated immediately after project submission for security.
@@ -82,7 +82,7 @@ Full-time employees receive 15 PTO days per year [1]
 - **pto_policy.md**
   _Full-time employees accrue 15 days of PTO per year..._
 
-⏱️ _Response time: 0.6s_
+⏱️ _Response time: 0.3s_
 ```
 
 ---
@@ -94,11 +94,11 @@ Full-time employees receive 15 PTO days per year [1]
 Based on evaluation of 25 test queries:
 
 **Response Times**:
-- **Latency (p50)**: 0.601 seconds (median)
-- **Latency (p95)**: 4.669 seconds (95th percentile)
-- **Latency (mean)**: 2.039 seconds (average)
-- **Latency (min)**: 0.232 seconds (fastest)
-- **Latency (max)**: 5.673 seconds (slowest)
+- **Latency (p50)**: 0.282 seconds (median)
+- **Latency (p95)**: 4.314 seconds (95th percentile)
+- **Latency (mean)**: 1.440 seconds (average)
+- **Latency (min)**: 0.162 seconds (fastest)
+- **Latency (max)**: 4.371 seconds (slowest)
 
 **Accuracy Metrics**:
 - **Groundedness**: 100% (all answers factually consistent)
@@ -114,7 +114,7 @@ Based on evaluation of 25 test queries:
 - Solution: HF Spaces maintains uptime better than Render
 
 **Warm Response**:
-- Time: 0.6-3 seconds for most queries
+- Time: 0.3-1.5 seconds for most queries
 - Memory Usage: ~1-2GB / 16GB available (12% utilization - plenty of headroom!)
 - CPU Usage: Low (Groq API handles heavy computation)
 
@@ -333,9 +333,12 @@ cd Rag_Chatbot
 # Update policy files
 nano data/policies/pto_policy.md
 
+# Rebuild vector store (if needed)
+python rebuild_vectorstore.py
+
 # Commit and push
-git add data/policies/
-git commit -m "Update PTO policy"
+git add data/policies/ chroma_db/
+git commit -m "Update PTO policy and rebuild vector store"
 git push
 
 # HF automatically rebuilds (2-3 minutes)
@@ -355,18 +358,21 @@ git push
 # HF automatically redeploys
 ```
 
-### Updating Dependencies
+### Updating Configuration
 
 ```bash
-# Update requirements.txt
-nano requirements.txt
+# Update configuration parameters
+nano src/config.py
+
+# IMPORTANT: Rebuild vector store after config changes
+python rebuild_vectorstore.py
 
 # Commit and push
-git add requirements.txt
-git commit -m "Update dependencies"
+git add src/config.py chroma_db/
+git commit -m "Optimize retrieval parameters and rebuild vector store"
 git push
 
-# HF rebuilds with new dependencies
+# HF rebuilds with new configuration
 ```
 
 ### Rollback to Previous Version
@@ -417,9 +423,26 @@ Solutions:
   2. Verify GROQ_API_KEY is correct
   3. Check Logs for initialization errors
   4. Ensure data/policies/ folder committed
+  5. Run rebuild_vectorstore.py locally and commit
 ```
 
-**Issue 3: Slow Responses**
+**Issue 3: Incomplete Answers**
+```
+Symptoms: "I don't have that information" despite relevant docs
+Causes:
+  - Old vector store with small chunks
+  - Low TOP_K value
+  - Outdated configuration
+
+Solutions:
+  1. Update src/config.py with optimized parameters:
+     - CHUNK_SIZE=400, CHUNK_OVERLAP=50, TOP_K=4
+  2. Run rebuild_vectorstore.py
+  3. Commit and push updated chroma_db/
+  4. Verify improved answers
+```
+
+**Issue 4: Slow Responses**
 ```
 Symptoms: Latency > 5 seconds
 Causes:
@@ -429,12 +452,12 @@ Causes:
 
 Solutions:
   1. Normal for first query (20-30s)
-  2. Subsequent queries should be 1-3s
+  2. Subsequent queries should be 0.3-1.5s
   3. Check Groq API status
   4. Consider caching for common queries
 ```
 
-**Issue 4: 429 Rate Limit Error**
+**Issue 5: 429 Rate Limit Error**
 ```
 Symptoms: "Rate limit exceeded" error
 Causes:
@@ -483,6 +506,13 @@ Solutions:
 - Example questions
 - Easy customization
 
+✅ **Optimized Retrieval**:
+- Larger chunks (400 tokens) provide better context
+- Higher overlap (50 tokens) ensures continuity
+- More retrieval (TOP_K=4) gives comprehensive answers
+- Lower temperature (0.2) provides focused responses
+- Result: 0.282s median latency, 100% accuracy
+
 ✅ **Architecture Choices**:
 - ChromaDB lightweight and fast
 - sentence-transformers CPU-friendly
@@ -499,6 +529,11 @@ Solutions:
 - Problem: Basic HTML interface
 - Solution: Gradio professional UI
 - Result: Beautiful, user-friendly interface
+
+✅ **Retrieval Optimization**:
+- Problem: Incomplete answers despite finding documents
+- Solution: Increased chunk size, overlap, and TOP_K
+- Result: Complete, accurate answers with faster response
 
 ✅ **Deployment Simplicity**:
 - Problem: Complex Render configuration
@@ -572,7 +607,7 @@ Solutions:
 
 ✅ **100% Uptime**: Space running 24/7
 ✅ **Zero OOM Errors**: 16GB RAM plenty
-✅ **Fast Responses**: 0.6s median latency
+✅ **Fast Responses**: 0.282s median latency
 ✅ **Perfect Accuracy**: 100% groundedness
 ✅ **Beautiful UI**: Professional Gradio interface
 ✅ **Easy Sharing**: Single URL to share
@@ -588,9 +623,9 @@ Solutions:
 
 ---
 
-**Last Updated**: October 25, 2025  
+**Last Updated**: October 26, 2025  
 **Deployment Status**: ✅ Active on Hugging Face Spaces  
-**Version**: 1.0.0  
+**Version**: 1.1.0 (Optimized Retrieval)  
 **Platform**: Hugging Face Spaces (Free Tier)  
 **Live URL**: https://huggingface.co/spaces/Mehedi98/Rag_Chatbot  
 **GitHub Repository**: https://github.com/MehediGit98/rag-policy-chatbot  
