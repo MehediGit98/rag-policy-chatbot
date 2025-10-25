@@ -15,7 +15,7 @@ from collections import defaultdict
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.retrieval import RAGRetriever
-from config import Config
+from src.config import Config
 from src.evaluation import (
     AnswerEvaluator, 
     LatencyEvaluator, 
